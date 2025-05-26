@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(120deg, #e0ffe0 0%, #b2f7ef 100%);
+            font-family: 'Montserrat', Arial, sans-serif;
+            color: #222;
+            min-height: 100vh;
+        }
+        #cadastro-box {
+            background: #fff;
+            padding: 38px 28px 32px 28px;
+            border-radius: 22px;
+            max-width: 420px;
+            width: 96%;
+            text-align: center;
+            margin: 60px auto 0 auto;
+            box-shadow: 0 8px 32px rgba(46,125,50,0.13), 0 2px 8px rgba(0,0,0,0.07);
+            border: 1.5px solid #b2f7ef;
+        }
+        #cadastro-box h2 {
+            margin-top: 0;
+            color: #2e7d32;
+            font-size: 2em;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        #cadastro-box p {
+            color: #888;
+            font-size: 1.08em;
+            margin-bottom: 26px;
+        }
+        #cadastro-box label {
+            margin: 12px 0 6px 2px;
+            text-align: left;
+            display: block;
+            color: #2e7d32;
+            font-weight: bold;
+            font-size: 1.08em;
+        }
+        #cadastro-box input,
+        #cadastro-box select {
+            width: 97%;
+            padding: 14px;
+            margin: 10px 0 18px 0;
+            border-radius: 10px;
+            border: 1.5px solid #b2f7ef;
+            font-size: 1.08em;
+            background: #f8fdf8;
+            transition: border 0.2s, box-shadow 0.2s;
+            box-sizing: border-box;
+            outline: none;
+        }
+        #cadastro-box input:focus,
+        #cadastro-box select:focus {
+            border: 1.5px solid #2e7d32;
+            box-shadow: 0 0 0 2px #b2f7ef55;
+        }
+        #finalizar-btn {
+            width: 100%;
+            background: #2e7d32;
+            color: #fff;
+            padding: 16px 0;
+            border-radius: 10px;
+            border: none;
+            font-size: 1.15em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 18px;
+            transition: background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(46,125,50,0.10);
+        }
+        #finalizar-btn:hover {
+            background: #219150;
+        }
+    </style>
+</head>
+<body>
+    <div id="cadastro-box">
+        <h2>Cadastro</h2>
+        <p>Preencha seus dados para finalizar a compra.</p>
+        <form id="form-cadastro" onsubmit="mostrarPagamento(event)">
+            <input type="text" name="Nome" placeholder="Nome completo" required>
+            <input type="email" name="Email" placeholder="E-mail" required>
+            <input type="text" name="Endereço" placeholder="Endereço completo ..." required>
+            
+            <label>Opção de entrega:</label>
+            <select name="Entrega" required>
+                <option value="">Selecione</option>
+                <option value="correios">Correios</option>
+                <option value="motoboy">Motoboy</option>
+                <option value="retirada">Retirada no local</option>
+            </select>
+
+            <label>Forma de pagamento:</label>
+            <select name="Pagamento" id="pagamento-select" required>
+                <option value="">Selecione</option>
+                <option value="pix">PIX</option>
+                <option value="cartao">Cartão de Crédito</option>
+                <option value="boleto">Boleto</option>
+            </select>
+
+            <!-- PIX -->
+            <div id="campo-pix" style="display:none; margin-bottom:18px;">
+                <label>Chave PIX para pagamento:</label>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <input type="text" id="chave-pix" value="SEU_PIX_AQUI" readonly style="background:#f0fff0; color:#2e7d32; font-weight:bold; flex:1;">
+                    <button type="button" onclick="copiarPix()" style="background:#2e7d32;color:#fff;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;">Copiar</button>
+                </div>
+                <small id="msg-copiado" style="color:#2e7d32;display:none;">Copiado!</small>
+                <small style="display:block;">Copie a chave PIX acima para realizar o pagamento.</small>
+            </div>
+
+            <!-- Cartão -->
+            <div id="campo-cartao" style="display:none; margin-bottom:18px; text-align:left;">
+                <label for="cartao-numero">Número do Cartão:</label>
+                <input type="text" id="cartao-numero" maxlength="19" placeholder="0000 0000 0000 0000">
+                <label for="cartao-nome">Nome no Cartão:</label>
+                <input type="text" id="cartao-nome">
+                <label for="cartao-validade">Validade:</label>
+                <input type="text" id="cartao-validade" maxlength="7" placeholder="MM/AAAA">
+                <label for="cartao-cvv">CVV:</label>
+                <input type="text" id="cartao-cvv" maxlength="4" placeholder="123">
+            </div>
+
+            <!-- Boleto -->
+            <div id="campo-boleto" style="display:none; margin-bottom:18px;">
+                <label>Código do Boleto:</label>
+                <input type="text" value="12345.67890 12345.678901 12345.678901 1 12340000010000" readonly style="background:#f0fff0; color:#2e7d32; font-weight:bold;">
+                <small>Copie o código e pague no seu banco.</small>
+            </div>
+
+            <button id="finalizar-btn" type="submit">Finalizar Pedido</button>
+        </form>
+    </div>
+
+    <script>
+    function mostrarPagamento(event) {
+        event.preventDefault();
+        // Esconde todos os campos
+        document.getElementById('campo-pix').style.display = 'none';
+        document.getElementById('campo-cartao').style.display = 'none';
+        document.getElementById('campo-boleto').style.display = 'none';
+
+        var metodo = document.getElementById('pagamento-select').value;
+        if (metodo === 'pix') {
+            document.getElementById('campo-pix').style.display = 'block';
+        } else if (metodo === 'cartao') {
+            document.getElementById('campo-cartao').style.display = 'block';
+        } else if (metodo === 'boleto') {
+            document.getElementById('campo-boleto').style.display = 'block';
+        }
+    }
+
+    function copiarPix() {
+        var chavePix = document.getElementById('chave-pix');
+        chavePix.select();
+        chavePix.setSelectionRange(0, 99999); // Para dispositivos móveis
+
+        document.execCommand("copy");
+
+        // Exibe a mensagem de copiado
+        var msgCopiado = document.getElementById('msg-copiado');
+        msgCopiado.style.display = 'inline';
+        setTimeout(function() {
+            msgCopiado.style.display = 'none';
+        }, 2000);
+    }
+    </script>
+</body>
+</html>
