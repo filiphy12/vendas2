@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VerdeM - Cannabis Medicinal</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Montserrat', Arial, sans-serif;
+            margin: 0;
+            background: linear-gradient(120deg, #e0ffe0 0%, #b2f7ef 100%);
+            color: #222;
+        }
+        #bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            min-width: 100vw;
+            min-height: 100vh;
+            width: auto;
+            height: auto;
+            z-index: -1;
+            object-fit: cover;
+            opacity: 0.7; /* ajuste a transparência se quiser */
+        }
+       
+        header {
+            background: #2e7d32;
+            color: #fff;
+            padding: 40px 0 20px 0;
+            text-align: center;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            box-shadow: 0 4px 16px rgba(46,125,50,0.15);
+        }
+        .logo {
+            height: 70px;
+            margin-bottom: 10px;
+        }
+        nav {
+            margin: 20px 0 0 0;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 18px;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: color 0.2s;
+        }
+        nav a:hover {
+            color: #b2f7ef;
+        }
+        .banner {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            display: block;
+        }
+        .products {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            padding: 40px 10px;
+            align-items: stretch; /* IMPORTANTE para igualar a altura dos cards */
+        }
+        .product {
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+            width: 260px;
+            padding: 22px;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Faz o botão ir para a base */
+            height: 100%; /* Garante altura igual */
+        }
+        .product:hover {
+            transform: translateY(-8px) scale(1.04);
+            box-shadow: 0 8px 32px rgba(46,125,50,0.18);
+        }
+        .product img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+        .product h3 {
+            margin: 15px 0 8px 0;
+            font-size: 1.15em;
+        }
+        .product p {
+            color: #555;
+            font-size: 0.97em;
+            min-height: 40px;
+        }
+        .buy-button {
+            background: linear-gradient(90deg, #25d366 0%, #2e7d32 100%);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            padding: 14px 0;
+            width: 100%;
+            font-size: 1.13em;
+            font-weight: bold;
+            margin-top: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(46,125,50,0.13);
+            transition: background 0.2s, color 0.2s, transform 0.13s;
+            letter-spacing: 0.5px;
+            text-align: center !important;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .buy-button:hover, .buy-button:focus {
+            background: linear-gradient(90deg, #2e7d32 0%, #25d366 100%);
+            color: #fff;
+            transform: scale(1.04);
+            box-shadow: 0 8px 32px rgba(46,125,50,0.18);
+        }
+        footer {
+            background: #2e7d32;
+            color: #fff;
+            text-align: center;
+            padding: 24px 10px 10px 10px;
+            margin-top: 40px;
+            font-size: 0.98em;
+            border-top-left-radius: 30px;
+            border-top-right-radius: 30px;
+        }
+        @media (max-width: 600px) {
+            .products {
+                flex-direction: column;
+                align-items: center;
+                padding: 10px;
+            }
+            .product {
+                width: 90%;
+                margin: 10px 0;
+            }
+            nav {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px 0;
+            }
+            .banner {
+                max-height: 180px;
+            }
+        }
+        .bola-animada {
+            width: 60px;
+            height: 60px;
+            background: #4f46e5;
+            border-radius: 50%;
+            position: relative;
+            animation: mover 2s infinite alternate;
+            margin: 40px auto;
+        }
+        @keyframes mover {
+            0% { left: 0; }
+            100% { left: 200px; }
+        }
+        #pagamento-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.3s;
+        }
+
+        #pagamento-conteudo {
+            background: #fff;
+            padding: 14px 6px 10px 6px; /* padding menor */
+            border-radius: 10px;
+            max-width: 250px; /* largura menor */
+            width: 96%;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 16px rgba(46,125,50,0.13), 0 2px 8px rgba(0,0,0,0.08);
+            animation: modalShow 0.4s;
+        }
+
+        @keyframes modalShow {
+            from { transform: translateY(-40px) scale(0.95); opacity: 0; }
+            to   { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        #pagamento-conteudo h2 {
+            margin-top: 0;
+            color: #2e7d32;
+            font-size: 1.5em;
+        }
+
+        /* Campos do formulário menores */
+        #pagamento-conteudo input,
+        #pagamento-conteudo select {
+            width: 90%;
+            padding: 5px;
+            margin: 5px 0 7px 0;
+            border-radius: 5px;
+            font-size: 0.93em;
+        }
+        #pagamento-conteudo input:focus,
+        #pagamento-conteudo select:focus {
+            border: 1.5px solid #2e7d32;
+            outline: none;
+        }
+
+        /* Botão submit menor */
+        #pagamento-conteudo button[type="submit"] {
+            padding: 7px 0;
+            width: 90%;
+            font-size: 0.98em;
+            margin-top: 7px;
+            border-radius: 5px;
+        }
+
+        #pagamento-conteudo label {
+            margin: 10px 0 5px 0;
+            text-align: left;
+            display: block;
+            color: #2e7d32;
+            font-weight: bold;
+            font-size: 1em;
+        }
+
+        #pagamento-conteudo span[onclick] {
+            color: #888;
+            transition: color 0.2s;
+        }
+        #pagamento-conteudo span[onclick]:hover {
+            color: #2e7d32;
+        }
+
+        /* Estilos para os botões de contato fixos */
+        .btn-contato {
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            transition: transform 0.2s;
+        }
+        .btn-contato:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        }
+        .btn-contato svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        /* Estilos para a barrinha de rolagem */
+        #scroll-bar {
+            position: fixed;
+            right: 18px;
+            bottom: 100px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        #scroll-bar button {
+            background: #229ED9;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 1.5em;
+            box-shadow: 0 2px 8px #2222;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        #scroll-bar button:hover {
+            background: #1a73e8;
+        }
+
+        #pagamento-conteudo button[type="submit"]:active {
+            background: #2e7d32 !important;
+            color: #fff !important;
+        }
+        .menos, .mais {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            font-size: 1.4em;
+            font-weight: bold;
+            box-shadow: 0 4px 16px rgba(46,125,50,0.18);
+            cursor: pointer;
+            transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            outline: none;
+            border: 2px solid #fff;
+        }
+        .menos:hover, .mais:hover, .menos:focus, .mais:focus {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            transform: scale(1.15) rotate(-8deg);
+            box-shadow: 0 8px 32px rgba(46,125,50,0.25);
+        }
+    </style>
+</head>
+<body>
+
+
+<header>
+    <img src="https://ondecomprarmaconha.com/wp-content/uploads/2025/01/Logo-Final-3-1.webp" alt="Logo VerdeMed" style="height:60px; vertical-align:middle; margin-right:15px;">
+    <span style="font-size:2em; vertical-align:middle;">Onde Comprar
+MACONHA</span>
+    <p>Produtos de Cannabis Medicinal com Qualidade e Segurança</p>
+</header>
+
+<!-- Banner principal -->
+<img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80" alt="Banner VerdeMed" class="banner">
+
+<nav>
+    
+    
+    
+    
+    
+    
+
+        
+
+<section class="products">
+    <div class="product">
+        <img src="https://ondecomprarmaconha.com/wp-content/uploads/2023/10/Lemon_Ice_5d0bf7772241b-removebg-preview_11zon-e1737246714129.webp" alt="Flor de CBD">
+        <h3>Ice – Indica Dominante</h3>
+        <div style="font-size:1.2em; color:#2e7d32; font-weight:bold; margin: 8px 0;">
+            R$ <span class="preco-unitario">35,00</span>
+        </div>
+        <p>Alta concentração de CBD, ideal para relaxamento e dores crônicas.</p>
+        <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin:10px 0;">
+            <button type="button" class="menos" onclick="alterarQtd(this, -1)">–</button>
+            <input type="text" class="quantidade" value="1" style="width:32px;text-align:center;" readonly>
+            <button type="button" class="mais" onclick="alterarQtd(this, 1)">+</button>
+        </div>
+        <div style="margin-bottom:10px;">
+            Total: R$ <span class="preco-total">35,00</span>
+        </div>
+        <a href="cadastro.html" class="buy-button">Comprar</a>
+    </div>
+    <div class="product">
+        <img src="https://ondecomprarmaconha.com/wp-content/uploads/2023/09/colombian-gold-removebg-preview-_1__11zon-1.webp" alt="Óleo de CBD">
+        <h3>Colombian Gold</h3>
+        <div style="font-size:1.2em; color:#2e7d32; font-weight:bold; margin: 8px 0;">
+            R$ <span class="preco-unitario">55,00</span>
+        </div>
+        <p>Uso medicinal com controle de qualidade. Sem THC.</p>
+        <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin:10px 0;">
+            <button type="button" class="menos" onclick="alterarQtd(this, -1)">–</button>
+            <input type="text" class="quantidade" value="1" style="width:32px;text-align:center;" readonly>
+            <button type="button" class="mais" onclick="alterarQtd(this, 1)">+</button>
+        </div>
+        <div style="margin-bottom:10px;">
+            Total: R$ <span class="preco-total">55,00</span>
+        </div>
+        <a href="cadastro.html" class="buy-button">Comprar</a>
+    </div>
+    <div class="product">
+        <img src="https://ondecomprarmaconha.com/wp-content/uploads/2023/10/e-scaled-1-1024x683-removebg-preview-1_11zon.webp" alt="Pomada CBD">
+        <h3>Blue Dream – Um Sonho Lúcido de Relaxamento e Euforia</h3>
+        <div style="font-size:1.2em; color:#2e7d32; font-weight:bold; margin: 8px 0;">
+            R$ <span class="preco-unitario">110,00</span>
+        </div>
+        <p>Aplicação tópica para inflamações e dores musculares.</p>
+        <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin:10px 0;">
+            <button type="button" class="menos" onclick="alterarQtd(this, -1)">–</button>
+            <input type="text" class="quantidade" value="1" style="width:32px;text-align:center;" readonly>
+            <button type="button" class="mais" onclick="alterarQtd(this, 1)">+</button>
+        </div>
+        <div style="margin-bottom:10px;">
+            Total: R$ <span class="preco-total">110,00</span>
+        </div>
+        <a href="cadastro.html" class="buy-button">Comprar</a>
+    </div>
+    <div class="product">
+        <img src="https://ondecomprarmaconha.com/wp-content/uploads/2023/09/70-Banana-Kush-removebg-preview_11zon.webp" alt="OG Kush">
+        <h3>Banana Kush – Indica Dominante</h3>
+        <div style="font-size:1.2em; color:#2e7d32; font-weight:bold; margin: 8px 0;">
+            R$ <span class="preco-unitario">45,00</span>
+        </div>
+        <p>Clássico mundial, aroma intenso e efeito relaxante.</p>
+        <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin:10px 0;">
+            <button type="button" class="menos" onclick="alterarQtd(this, -1)">–</button>
+            <input type="text" class="quantidade" value="1" style="width:32px;text-align:center;" readonly>
+            <button type="button" class="mais" onclick="alterarQtd(this, 1)">+</button>
+        </div>
+        <div style="margin-bottom:10px;">
+            Total: R$ <span class="preco-total">45,00</span>
+        </div>
+        <a href="cadastro.html" class="buy-button">Comprar</a>
+    </div>
+    <div class="product">
+        <img src="https://ondecomprarmaconha.com/wp-content/uploads/2023/10/purple-queen-removebg-preview_11zon.webp" alt="White Widow">
+        <h3>Purple Queen – Indica Dominante</h3>
+        <div style="font-size:1.2em; color:#2e7d32; font-weight:bold; margin: 8px 0;">
+            R$ <span class="preco-unitario">25,00</span>
+        </div>
+        <p>Equilíbrio perfeito entre relaxamento e energia. Muito procurada!</p>
+        <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin:10px 0;">
+            <button type="button" class="menos" onclick="alterarQtd(this, -1)">–</button>
+            <input type="text" class="quantidade" value="1" style="width:32px;text-align:center;" readonly>
+            <button type="button" class="mais" onclick="alterarQtd(this, 1)">+</button>
+        </div>
+        <div style="margin-bottom:10px;">
+            Total: R$ <span class="preco-total">25,00</span>
+        </div>
+        <a href="cadastro.html" class="buy-button">Comprar</a>
+    </div>
+    <div class="product">
+        <img src="https://ondecomprarmaconha.com/wp-content/uploads/2023/10/gelato_11zon.webp" alt="AK-47">
+        <h3>Green Gelato – Híbrida</h3>
+        <div style="font-size:1.2em; color:#2e7d32; font-weight:bold; margin: 8px 0;">
+            R$ <span class="preco-unitario">35,00</span>
+        </div>
+        <p>Potente, com aroma marcante e efeito duradouro.</p>
+        <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin:10px 0;">
+            <button type="button" class="menos" onclick="alterarQtd(this, -1)">–</button>
+            <input type="text" class="quantidade" value="1" style="width:32px;text-align:center;" readonly>
+            <button type="button" class="mais" onclick="alterarQtd(this, 1)">+</button>
+        </div>
+        <div style="margin-bottom:10px;">
+            Total: R$ <span class="preco-total">35,00</span>
+        </div>
+        <a href="cadastro.html" class="buy-button">Comprar</a>
+    </div>
+</section>
+
+<!-- Modal de Pagamento -->
+<div id="pagamento-modal">
+  <div id="pagamento-conteudo">
+    <span onclick="fecharPagamento()" style="position:absolute;top:10px;right:18px;cursor:pointer;font-size:1.3em;">&times;</span>
+    <h2>Pagamento</h2>
+    <form id="form-pagamento" onsubmit="enviarPagamento(event)">
+      <label for="nome">Nome:</label>
+      <input type="text" id="nome" name="nome" required>
+      <label for="email">E-mail:</label>
+      <input type="email" id="email" name="email" required>
+      <label for="endereco">Endereço:</label>
+      <input type="text" id="endereco" name="endereco" required placeholder="Rua, número, complemento">
+      <label for="bairro">Bairro:</label>
+      <input type="text" id="bairro" name="bairro" required placeholder="Bairro">
+      <label for="cidade">Cidade:</label>
+      <input type="text" id="cidade" name="cidade" required placeholder="Cidade">
+      <label for="cep">CEP:</label>
+      <input type="text" id="cep" name="cep" required placeholder="00000-000">
+      <p style="margin:10px 0 2px 0; color:#2e7d32; font-weight:bold;">Como deseja pagar?</p>
+      <label for="metodo">Escolha o método de pagamento:</label>
+      <select id="metodo" name="metodo" required onchange="mostrarCamposPagamento()">
+        <option value="">Selecione</option>
+        <option value="pix">PIX</option>
+        <option value="cartao">Cartão de Crédito</option>
+        <option value="boleto">Boleto</option>
+      </select>
+      <!-- Campos PIX -->
+      <div id="campo-pix" style="display:none;">
+        <label>Chave PIX para pagamento:</label>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="chave-pix" value="" readonly style="background:#f0fff0;flex:1;">
+          <button type="button" onclick="copiarPix()">Copiar</button>
+        </div>
+        <small>Copie a chave e faça o pagamento no seu banco.</small>
+      </div>
+      <!-- Campos Cartão -->
+      <div id="campo-cartao" style="display:none;">
+        <label for="cartao-numero">Número do Cartão:</label>
+        <input type="text" id="cartao-numero" name="cartao-numero" maxlength="19" placeholder="0000 0000 0000 0000">
+        <label for="cartao-nome">Nome no Cartão:</label>
+        <input type="text" id="cartao-nome" name="cartao-nome">
+        <label for="cartao-validade">Validade:</label>
+        <input type="text" id="cartao-validade" name="cartao-validade" maxlength="7" placeholder="MM/AAAA">
+        <label for="cartao-cvv">CVV:</label>
+        <input type="text" id="cartao-cvv" name="cartao-cvv" maxlength="4" placeholder="123">
+      </div>
+      <!-- Campos Boleto -->
+      <div id="campo-boleto" style="display:none;">
+        <label>Código do Boleto:</label>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="codigo-boleto" value="34191.79001 01043.510047 91020.150008 8 89370000002000" readonly style="background:#f0fff0;flex:1;">
+          <button type="button" onclick="copiarBoleto()">Copiar</button>
+        </div>
+        <small>Copie o código e pague no seu banco.</small>
+      </div>
+      <button type="submit">Finalizar Pagamento</button>
+    </form>
+    <div id="mensagem-pagamento" style="display:none; margin-top:18px; color:#2e7d32; font-weight:bold;"></div>
+  </div>
+</div>
+
+
+
+</div>
+
+<!-- Botões de contato fixos -->
+<div style="position:fixed;bottom:22px;right:22px;z-index:999;display:flex;flex-direction:column;gap:14px;">
+  <!-- WhatsApp -->
+  <a href="https://wa.me/5599999999999" target="_blank" title="Fale no WhatsApp"
+     style="background:#25d366;padding:11px 13px;border-radius:50%;box-shadow:0 2px 8px #2222;display:flex;align-items:center;justify-content:center;">
+    <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="16" fill="#25d366"/><path d="M22.1 18.7c-.3-.2-1.7-.8-2-1s-.5-.2-.7.1c-.2.3-.8 1-.9 1.1-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.6-1.8-1.8-2.1-.2-.3 0-.5.1-.7.1-.1.2-.3.3-.4.1-.1.1-.2.2-.3.1-.1.1-.2.2-.3.1-.2.1-.4 0-.6-.1-.2-.7-1.7-.9-2.3-.2-.6-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.2.2-.7.7-.7 1.7 0 1 .7 2.1 1.1 2.6.1.2 2.2 3.4 5.3 4.6.7.3 1.2.5 1.6.6.7.2 1.3.2 1.7.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2z" fill="#fff"/></svg>
+  </a>
+  <!-- Telegram -->
+  <a href="https://t.me/Anonimo_444" target="_blank" title="Fale no Telegram"
+     style="background:#229ED9;padding:11px 13px;border-radius:50%;box-shadow:0 2px 8px #2222;display:flex;align-items:center;justify-content:center;">
+    <svg width="28" height="28" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="120" cy="120" r="120" fill="#229ED9"/>
+      <path d="M180.7 72.6L159.2 178.2c-2.1 9.2-7.7 11.5-15.6 7.2l-43.2-31.9-20.8 20c-2.3 2.3-4.2 4.2-8.6 4.2l3.1-44.1 80.3-72.5c3.5-3.1-0.8-4.8-5.4-1.7l-99.3 62.5-42.8-13.4c-9.3-2.9-9.5-9.3 1.9-13.8l167.5-64.6c7.8-2.9 14.6 1.9 12.1 13.7z" fill="#fff"/>
+    </svg>
+  </a>
+</div>
+
+
+   
+    document.getElementById('campo-pix').style.display = 'none';
+    document.getElementById('campo-cartao').style.display = 'none';x').style.display = 'none';
+    document.getElementById('campo-boleto').style.display = 'none';
+    if (metodo === 'pix') {leto').style.display = 'none';
+      document.getElementById('campo-pix').style.display = 'block';
+    } else if (metodo === 'cartao') { document.getElementById('campo-pix').style.display = 'block';
+      document.getElementById('campo-cartao').style.display = 'block'; } else if (metodo === 'cartao') {
+    } else if (metodo === 'boleto') {      document.getElementById('campo-cartao').style.display = 'block';
+      document.getElementById('campo-boleto').style.display = 'block';= 'boleto') {
+    }lay = 'block';
+  }
+
+ 
+
+
+
+
+
+  </html></body>
+
+
+<script>
+function alterarQtd(btn, delta) {
+    const product = btn.closest('.product');
+    const input = product.querySelector('.quantidade');
+    let qtd = parseInt(input.value, 10) + delta;
+    if (qtd < 1) qtd = 1;
+    input.value = qtd;
+
+    // Atualiza o valor total
+    const precoUnit = parseFloat(product.querySelector('.preco-unitario').innerText.replace(',', '.'));
+    const total = (precoUnit * qtd).toFixed(2).replace('.', ',');
+    product.querySelector('.preco-total').innerText = total;
+}
+</script>
+</body>
+</html>
+
+
+</body>
+
+
+
+</html>
+
+
